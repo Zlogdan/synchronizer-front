@@ -16,3 +16,7 @@
 .text-size{
     font-size: 83%;
 }
+
+td, th {
+    width: 300px;
+}

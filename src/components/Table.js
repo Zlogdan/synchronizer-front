@@ -2,6 +2,7 @@ import React, {Component} from 'react'
 import {BootstrapTable, TableHeaderColumn} from 'react-bootstrap-table'
 import '../css/Table.css'
 import '../react-bootstrap-table/dist/react-bootstrap-table-all.min.css'
+//import table from "./table";
 
 
 function onSelectRow(row, isSelected, e) {
@@ -19,26 +20,61 @@ const selectRowProp = {
 
 class Table extends Component {
 
-    renderTableHeaderColumn(tableExample) {
-        let table = []
-        let keys = Object.keys(tableExample.data[0])
-
-        table.push(<TableHeaderColumn isKey
-                                      tdStyle={{ whiteSpace: 'normal', wordWrap: 'break-word' }} dataField={keys[0]}>{tableExample.columnNames[0]}</TableHeaderColumn>)
-        for (let i = 1; i < keys.length; i++) {
-            table.push(<TableHeaderColumn
-                tdStyle={{ whiteSpace: 'normal', wordWrap: 'break-word' }} dataField={keys[i]}>{tableExample.columnNames[i]}</TableHeaderColumn>)
+    whatRender(table) {
+        if (table === '') {
+            return (
+                <form>
+                    <p className="Table-header">Введите имя таблицы</p>
+                </form>
+            )
+        }else if(table.data===[]){ //todo сделать проверку на пустые данные в ответе
+            return (
+                <form>
+                    <p className="Table-header">Ничего нет</p>
+                </form>
+            )
+        } else {
+            console.log(table.data)
+            return (
+                <form>
+                    <p className="Table-header">{table.tableName}</p>
+                    <div className="text-size">
+                        <BootstrapTable data={this.props.table.data} selectRow={selectRowProp}>
+                            {this.renderTableHeaderColumn(this.props.table)}
+                        </BootstrapTable>
+                    </div>
+                </form>
+            )
         }
-        return table;
     }
+
+    renderTableHeaderColumn(table){
+        console.log(table)
+        if (table === '') {
+            console.log("PIZDOS")
+        }
+        let currentTable = []
+        let keys = Object.keys(table.data[0])
+
+        currentTable.push(<TableHeaderColumn isKey
+                                      tdStyle={{
+                                          whiteSpace: 'normal',
+                                          wordWrap: 'break-word'
+                                      }} dataField={keys[0]}>{table.columnNames[0]}</TableHeaderColumn>)
+        for (let i = 1; i < keys.length; i++) {
+            currentTable.push(<TableHeaderColumn
+                tdStyle={{
+                    whiteSpace: 'normal',
+                    wordWrap: 'break-word'
+                }} dataField={keys[i]}>{table.columnNames[i]}</TableHeaderColumn>)
+        }
+        return currentTable;
+    }
+
 
     render() {
         return (
-            <div className="text-size">
-                <BootstrapTable data={this.props.tableExample.data} selectRow={selectRowProp}>
-                    {this.renderTableHeaderColumn(this.props.tableExample)}
-                </BootstrapTable>
-            </div>
+            this.whatRender(this.props.table)
         )
     }
 }

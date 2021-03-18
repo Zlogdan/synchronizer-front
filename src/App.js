@@ -1,23 +1,12 @@
 import React, {Component} from 'react';
 import './css/App.css';
-import Table from './components/Table'
-import tableExample from "./components/TableExample";
+import NameForm from "./components/NameForm";
 
 class App extends Component {
     render() {
         return (
             <div className="App">
-                <div className="container-fluid">
-                    <div className="row">
-                        <div className="col-sm">
-                            <p className="Table-header">{tableExample.tableName}</p>
-                            <Table tableExample={tableExample}/>
-                        </div>
-                        <div className="col-sm">
-                            тут будет другая часть
-                        </div>
-                    </div>
-                </div>
+                <NameForm/>
             </div>
         );
     }
