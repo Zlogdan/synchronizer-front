@@ -1,52 +1,43 @@
-import React, {Component} from 'react';
+import React from 'react';
 import './css/App.css';
-import NameForm from "./components/NameForm";
+import {Link, Route, Switch} from "react-router-dom";
+import Dict from "./routes/Dict";
+import Repeater from "./routes/Repeater";
+import Home from "./routes/Home";
+import {Nav, Navbar} from 'react-bootstrap';
 
-class App extends Component {
+
+const NavBar = () => (
+    <div>
+        <Navbar bg="dark" variant="dark">
+            <Nav className="mr-auto">
+                <li><Link className="navbar-brand" to='/'>АСПР мультитул</Link></li>
+                <li><Link className="nav-link" to='/dict'>Словари</Link></li>
+                <li><Link className="nav-link" to='/repeater'>Запросы</Link></li>
+            </Nav>
+        </Navbar>
+    </div>
+)
+
+const Main = () => (
+    <main>
+        <Switch>
+            <Route exact path='/' component={Home}/>
+            <Route path='/dict' component={Dict}/>
+            <Route path='/repeater' component={Repeater}/>
+        </Switch>
+    </main>
+)
+
+class App extends React.Component {
     render() {
         return (
             <div className="App">
-                <NameForm/>
+                <NavBar/>
+                <Main/>
             </div>
         );
     }
 }
 
 export default App;
-
-// import React from 'react';
-// import FlavorForm from "./FlavorForm";
-// import NameForm from "./NameForm";
-// import MyTable from "./MyTable";
-//
-// const selectList = {
-//     selectedOption: 'dev',
-//     options: ['test', 'prod', 'dev']
-// }
-// const tableExample = {
-//     tableName: 'DICT_ASPR',
-//     columnNames: ['aspr_id', 'id', 'lpt_code'],
-//     rows: [['as01', 'i02aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', 'l03'], ['as11', 'i12', 'l13'], ['as21', 'i22', 'l23'], ['as31', 'i32', 'l33']]
-// }
-//
-// class App extends React.Component {
-//     constructor(props) {
-//         super(props);
-//         this.state = {
-//             table:tableExample,
-//         };
-//     }
-//
-//     render() {
-//         return (
-//             <form>
-//                 <FlavorForm selectList={selectList}/>
-//                 <NameForm/>
-//                 <MyTable
-//                     table={this.state.table}
-//                 />
-//             </form>);
-//     }
-// }
-//
-// export default App;
