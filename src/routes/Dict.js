@@ -1,13 +1,10 @@
 import TableQuery from "../components/TableQuery";
+import serverList from "../static/Servers";
 
-const selectList = {
-    selectedOption: '',
-    options: ['MSBTEST', 'MSBDEV']
-}
 
 const Dict = () => (
     <div>
-        <TableQuery selectList={selectList}/>
+        <TableQuery serverList={serverList}/>
     </div>
 )
 export default Dict

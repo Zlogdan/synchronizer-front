@@ -1,6 +1,3 @@
-
-const stri ='LOAN_PRODUCT_TYPE' ;
-
 const tableExampleMui = {
     columns: [
         {field: 'id', headerName: 'ID', width: 70},

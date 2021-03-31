@@ -6,6 +6,9 @@ import Repeater from "./routes/Repeater";
 import Home from "./routes/Home";
 import {Nav, Navbar} from 'react-bootstrap';
 
+//при возникновении надоедливых ошибок про лицензию
+//закоментировать в файле node_modules/@material-ui/x-license/dist/esm/index.js строку
+// console.error(["********************
 
 const NavBar = () => (
     <div>

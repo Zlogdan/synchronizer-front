@@ -8,9 +8,8 @@ import SaveIcon from '@material-ui/icons/Save';
 import PageviewIcon from '@material-ui/icons/Pageview';
 
 import TableMui from "./TableMui";
-import tableExampleMui from "./TableExampleMui";
+import tableExampleMui from "../static/TableExampleMui";
 import {Paper} from "@material-ui/core";
-
 const url = 'http://10.218.2.28:8080/api/';
 
 class TableQuery extends React.Component {
@@ -23,10 +22,10 @@ class TableQuery extends React.Component {
             dictTable: '',
             value: 'TEST_TEST',
             selectedOption: {
-                fromSelected: this.props.selectList.options[0],
-                toSelected: this.props.selectList.options[1],
+                fromSelected: this.props.serverList[0],
+                toSelected: this.props.serverList[1],
             },
-            options: this.props.selectList.options
+            options: this.props.serverList
         };
     }
 
