@@ -18,7 +18,7 @@ class TableMui extends React.Component {
     render() {
         return (
             <div>
-                <div style={{height: 400, width: '100%'}}>
+                <div className="bg-light" style={{height: 400, width: '100%'}}>
                     <XGrid
                         pagination={true}
                         pageSize={7}

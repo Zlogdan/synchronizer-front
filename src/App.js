@@ -9,7 +9,7 @@ import {Nav, Navbar} from 'react-bootstrap';
 
 const NavBar = () => (
     <div>
-        <Navbar bg="dark" variant="dark">
+        <Navbar bg="dark" variant="dark" className="mb-4">
             <Nav className="mr-auto">
                 <li><Link className="navbar-brand" to='/'>АСПР мультитул</Link></li>
                 <li><Link className="nav-link" to='/dict'>Словари</Link></li>

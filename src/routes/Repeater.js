@@ -1,6 +1,8 @@
+import RepeaterPage from "../components/RepeaterPage";
+
 const Repeater = () => (
     <div>
-        <label>NIHUYA NETU</label>
+        <RepeaterPage/>
     </div>
 )
 export default Repeater

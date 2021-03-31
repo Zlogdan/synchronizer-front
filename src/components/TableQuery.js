@@ -9,6 +9,7 @@ import PageviewIcon from '@material-ui/icons/Pageview';
 
 import TableMui from "./TableMui";
 import tableExampleMui from "./TableExampleMui";
+import {Paper} from "@material-ui/core";
 
 const url = 'http://10.218.2.28:8080/api/';
 
@@ -127,12 +128,11 @@ class TableQuery extends React.Component {
     render() {
         return (
             <div>
-                <div>
-
+                <Paper className="mb-2 bg-light">
                     <div className="form-inline">
-
-                        <div className="form-group mt-3 mb-2 mr-2">
+                        <div className="form-group ml-3 mt-3 mb-2 mr-2">
                             <Autocomplete
+                                size="small"
                                 options={this.state.options}
                                 style={{width: 250, marginRight: 20}}
                                 value={this.state.selectedOption.fromSelected}
@@ -149,6 +149,7 @@ class TableQuery extends React.Component {
                                     <TextField {...params} label="Сервер источник" variant="outlined"/>}
                             />
                             <Autocomplete
+                                size="small"
                                 options={this.state.options}
                                 style={{width: 250, marginRight: 20}}
                                 value={this.state.selectedOption.toSelected}
@@ -164,6 +165,7 @@ class TableQuery extends React.Component {
                                     <TextField {...params} label="Сервер получатель" variant="outlined"/>}
                             />
                             <Autocomplete
+                                size="small"
                                 options={this.state.tableNames}
                                 style={{width: 300}}
                                 value={this.state.value}
@@ -174,35 +176,35 @@ class TableQuery extends React.Component {
                                     <TextField {...params} label="Введите имя таблицы" variant="outlined"/>}
                             />
                         </div>
-                        <div className="form-group  mt-1 ml-2">
+                        <div className="form-group  mt-2 ml-2">
                             <Button
-                                variant="contained"
+                                variant="outlined"
                                 color="primary"
-                                size="large"
+                                size="medium"
                                 className="mr-2"
                                 onClick={this.handleClick.bind(this, "viewing")}
-                                endIcon={<PageviewIcon />}
+                                endIcon={<PageviewIcon/>}
                             >
                                 Показать таблицу
                             </Button>
                             <Button
-                                variant="contained"
-                                color="primary"
-                                size="large"
-                                className="btn-warning"
+                                variant="outlined"
+                                color="secondary"
+                                size="medium"
+                                className=""
                                 onClick={this.handleClick.bind(this, "copying")}
-                                endIcon={<SaveIcon />}
+                                endIcon={<SaveIcon/>}
                             >
-                                Копировать c {this.state.selectedOption.fromSelected} на {this.state.selectedOption.toSelected}
+                                Копировать
+                                c {this.state.selectedOption.fromSelected} на {this.state.selectedOption.toSelected}
                             </Button>
                         </div>
                     </div>
-                </div>
+                </Paper>
                 <TableMui
                     dictTable={tableExampleMui}
                     onSelectRow={this.onSelectRow}
                 />
-                {/*<Table dictTable={this.state.dictTable}/>*/}
             </div>
         );
     }
