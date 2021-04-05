@@ -14,22 +14,31 @@ class TableMui extends React.Component {
         this.props.onSelectRow(selectionModel);
     }
 
+    returnTable() {
+        console.log(this.props.dictTable)
+        if (this.props.dictTable !== {}) {
+            console.log("не туда")
+            return (<XGrid
+                pagination={true}
+                pageSize={7}
+                {...this.props.dictTable}
+                // loading={this.props.dictTable.rows.length === 0}
+                rowHeight={38}
+                checkboxSelection
+                onSelectionModelChange={(newSelection) => {
+                    this.onSelectRow(newSelection.selectionModel)
+                }}
+            />)
+        } else {
+            return (<div>Какаха</div>)
+        }
+    }
 
     render() {
         return (
             <div>
                 <div className="bg-light" style={{height: 400, width: '100%'}}>
-                    <XGrid
-                        pagination={true}
-                        pageSize={7}
-                        {...this.props.dictTable}
-                        // loading={this.props.dictTable.rows.length === 0}
-                        rowHeight={38}
-                        checkboxSelection
-                        onSelectionModelChange={(newSelection) => {
-                            this.onSelectRow(newSelection.selectionModel)
-                        }}
-                    />
+                    {this.returnTable()}
                 </div>
             </div>
         )

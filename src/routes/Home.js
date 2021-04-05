@@ -1,6 +1,6 @@
 const Home = () => (
     <div>
-        <h1>Welcome to the помойка!</h1>
+        <h1>ZINA is not adminka</h1>
     </div>
 )
 export default Home

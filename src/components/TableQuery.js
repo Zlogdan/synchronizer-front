@@ -10,6 +10,7 @@ import PageviewIcon from '@material-ui/icons/Pageview';
 import TableMui from "./TableMui";
 import tableExampleMui from "../static/TableExampleMui";
 import {Paper} from "@material-ui/core";
+
 const url = 'http://10.218.2.28:8080/api/';
 
 class TableQuery extends React.Component {
