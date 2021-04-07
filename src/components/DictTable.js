@@ -1,8 +1,9 @@
 import {GridToolbar, XGrid} from "@material-ui/x-grid";
 import React, {useEffect, useState} from "react";
 
-export const LogTables = (props) => {
+export const DictTable = (props) => {
     const [curTable, setCurTable] = useState(props.table);
+
 
     useEffect(() => {
         setCurTable(props.table)
@@ -34,6 +35,10 @@ export const LogTables = (props) => {
                 pageSize={7}
                 {...curTable}
                 rowHeight={38}
+                checkboxSelection
+                onSelectionModelChange={(newSelection) => {
+                    props.onSelectRow(newSelection.selectionModel)
+                }}
                 components={{
                     Toolbar: GridToolbar,
                 }}

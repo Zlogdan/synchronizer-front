@@ -17,7 +17,7 @@ class TableMui extends React.Component {
     returnTable() {
         console.log(this.props.dictTable)
         if (this.props.dictTable !== {}) {
-            console.log("не туда")
+            console.log(" не туда")
             return (<XGrid
                 pagination={true}
                 pageSize={7}

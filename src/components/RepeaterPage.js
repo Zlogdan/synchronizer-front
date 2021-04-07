@@ -7,8 +7,9 @@ import SpellcheckIcon from '@material-ui/icons/Spellcheck';
 import SendIcon from '@material-ui/icons/Send';
 import axios from "axios";
 import {LogTables} from "./LogTables";
+import getUserIP from "./GetIp";
 
-const url = "http://10.218.2.80:8099/api/"
+const url = process.env.REACT_APP_REPEATER_API_URL;
 const format = require('xml-formatter');
 
 class RepeaterPage extends React.Component {
@@ -16,7 +17,10 @@ class RepeaterPage extends React.Component {
         super(props);
         this.state = {
             sendButtons: true,
+            tableButtonFrom: true,
+            tableButtonTo: true,
             asprId: 'ASPR_ID_ASD_QWE_!@#_123_?><',
+            newAsprId: '',
             selectedOption: {
                 sourceDb: '',
                 targetDb: '',
@@ -29,16 +33,21 @@ class RepeaterPage extends React.Component {
                 endpoints: [],
             },
             xmlRequest: '',
+            xmlRequestError: false,
             xmlResponse: '',
+            xmlResponseError: false,
             requestTableFrom: undefined,
             requestTableTo: undefined,
             tableFrom: undefined,
             tableTo: undefined,
-
+            userIp:'',
         };
     }
 
     componentDidMount() {
+        getUserIP((ip)=>{
+            this.setState({userIp:ip})
+        })
         let self = this
         axios.get(url + 'sources')
             .then((sourcesResponse) => {
@@ -55,11 +64,11 @@ class RepeaterPage extends React.Component {
             })
     }
 
-    onChangeTarget(event, newValue) {
+    onChangeTargetDb(event, newValue) {
         let self = this
         axios.get(url + 'endpoints', {
             params: {
-                target: newValue,
+                source: newValue,
             }
         })
             .then((endpointsResponse) => {
@@ -72,8 +81,8 @@ class RepeaterPage extends React.Component {
                     },
                     selectedOption: {
                         sourceDb: self.state.selectedOption.sourceDb,
-                        targetDb: self.state.selectedOption.targetDb,
-                        target: newValue,
+                        targetDb: newValue,
+                        target: self.state.selectedOption.target,
                         endpoint: endpointsResponse.data[0],
                     }
                 });
@@ -85,12 +94,22 @@ class RepeaterPage extends React.Component {
         axios.get(url + 'request', {
             params: {
                 id: self.state.asprId,
-                sourceDb: self.state.selectedOption.sourceDb
+                source: self.state.selectedOption.sourceDb
             }
         })
             .then((requestResponse) => {
+
                 self.setState({
-                    xmlRequest: format(requestResponse.data, {collapseContent: true})
+                    xmlRequest: format(requestResponse.data, {collapseContent: true}),
+                    xmlRequestError: false,
+                })
+            })
+            .catch((e) => {
+                console.log("ОШИБКА")
+                console.log(e)
+                self.setState({
+                    xmlRequest: e,
+                    xmlRequestError: true
                 })
             })
     }
@@ -106,38 +125,59 @@ class RepeaterPage extends React.Component {
                 self.setState({
                     xmlRequest: format(requestResponse.data, {collapseContent: true})
                 })
+            }).catch((e) => {
+            console.log("ОШИБКА")
+            console.log(e)
+            self.setState({
+                xmlResponse: e
             })
+        })
     }
 
     sendRequest() {
         let self = this
         let body = {
             request: this.state.xmlRequest,
-            target: this.state.selectedOption.target
+            target: this.state.selectedOption.target,
+            ip: this.state.userIp,
         }
         axios.post(url + 'send', body)
             .then((requestResponse) => {
+                console.log("requestResponse")
+                console.log(requestResponse)
+                let error = false;
+                if (requestResponse.data.status !== "OK") {
+                    error = true;
+                }
+
                 self.setState({
-                    xmlResponse: format(requestResponse.data, {collapseContent: true})
+                    xmlResponse: format(requestResponse.data.body, {collapseContent: true}),
+                    newAsprId: requestResponse.data.id,
+                    xmlResponseError: error,
                 })
             })
             .catch((e) => {
+                console.log("ОШИБКА")
+                console.log(e)
                 self.setState({
-                    xmlResponse: format(e.data, {collapseContent: true})
+                    xmlResponse: e
                 })
             })
     }
 
-    getTableFrom(event) {
+    getTableFrom() {
         let self = this
         axios.get(url + 'info', {
             params: {
                 id: self.state.asprId,
-                sourceDb: self.state.selectedOption.sourceDb
+                source: self.state.selectedOption.sourceDb
             }
         })
             .then((response) => {
-                this.setState({requestTableFrom: response.data})
+                this.setState({
+                    requestTableFrom: response.data,
+                    tableButtonFrom: false
+                })
             })
     }
 
@@ -145,12 +185,15 @@ class RepeaterPage extends React.Component {
         let self = this
         axios.get(url + 'info', {
             params: {
-                id: self.state.asprId,
-                targetDb: self.state.selectedOption.targetDb
+                id: self.state.newAsprId,
+                source: self.state.selectedOption.targetDb
             }
         })
             .then((response) => {
-                this.setState({requestTableTo: response.data})
+                this.setState({
+                    requestTableTo: response.data,
+                    tableButtonTo: false
+                })
             })
     }
 
@@ -180,8 +223,6 @@ class RepeaterPage extends React.Component {
                                         renderInput={(params) =>
                                             <TextField {...params} label="Выберите БД" variant="outlined"/>}
                                     />
-                                </div>
-                                <div className="form-inline">
                                     <TextField
                                         style={{width: 405}}
                                         size="small"
@@ -207,6 +248,7 @@ class RepeaterPage extends React.Component {
                             </div>
                         </Paper>
                         <TextField
+                            error={this.state.xmlRequestError}
                             fullWidth
                             multiline
                             id="outlined-multiline-static"
@@ -229,7 +271,14 @@ class RepeaterPage extends React.Component {
                                         options={this.state.options.targets}
                                         style={{width: 180, marginRight: 5}}
                                         onChange={(event, newValue) => {
-                                            this.onChangeTarget(event, newValue)
+                                            this.setState({
+                                                selectedOption: {
+                                                    sourceDb: this.state.selectedOption.sourceDb,
+                                                    targetDb: this.state.selectedOption.targetDb,
+                                                    target: newValue,
+                                                    endpoint: this.state.selectedOption.endpoint,
+                                                }
+                                            })
                                         }}
                                         renderInput={(params) =>
                                             <TextField {...params} label="Выберите сервер" variant="outlined"/>}
@@ -239,14 +288,7 @@ class RepeaterPage extends React.Component {
                                         options={this.state.options.sources}
                                         style={{width: 180, marginRight: 5}}
                                         onChange={(event, newValue) => {
-                                            this.setState({
-                                                selectedOption: {
-                                                    sourceDb: this.state.selectedOption.targetDb,
-                                                    targetDb: newValue,
-                                                    target: this.state.selectedOption.target,
-                                                    endpoint: this.state.selectedOption.endpoint,
-                                                }
-                                            })
+                                            this.onChangeTargetDb(event, newValue)
                                         }}
                                         renderInput={(params) =>
                                             <TextField {...params} label="Выберите БД" variant="outlined"/>}
@@ -260,7 +302,7 @@ class RepeaterPage extends React.Component {
                                         onChange={(event, newValue) => {
                                             this.setState({
                                                 selectedOption: {
-                                                    sourceDb: this.state.selectedOption.sources,
+                                                    sourceDb: this.state.selectedOption.sourceDb,
                                                     targetDb: this.state.selectedOption.targetDb,
                                                     target: this.state.selectedOption.target,
                                                     endpoint: newValue,
@@ -298,20 +340,30 @@ class RepeaterPage extends React.Component {
                                     >
                                         Отправить
                                     </Button>
+                                    <TextField
+                                        style={{width: 350, marginLeft: 5}}
+                                        size="small"
+                                        id="outlined-basic"
+                                        label="Введите локальный ip"
+                                        value={this.state.userIp}
+                                        onChange={(event) => {
+                                            this.setState({userIp: event.target.value})
+                                        }}
+                                        variant="outlined"/>
                                 </div>
                             </div>
                         </Paper>
                         <TextField
+                            error={this.state.xmlResponseError}
                             fullWidth
                             multiline
                             id="outlined-multiline-static"
                             label="XML ответ"
                             value={this.state.xmlResponse}
-                            rows={18}
+                            rows={16}
                             variant="outlined"
                         />
                     </Grid>
-
                 </Grid>
                 <Grid container spacing={2}>
                     <Grid item xs={6}>
@@ -329,6 +381,7 @@ class RepeaterPage extends React.Component {
                                     Получить
                                 </Button>
                                 <Button
+                                    disabled={this.state.tableButtonFrom}
                                     variant="outlined"
                                     color="default"
                                     size="medium"
@@ -342,6 +395,7 @@ class RepeaterPage extends React.Component {
                                     wsCallLog
                                 </Button>
                                 <Button
+                                    disabled={this.state.tableButtonFrom}
                                     variant="outlined"
                                     color="default"
                                     size="medium"
@@ -362,10 +416,11 @@ class RepeaterPage extends React.Component {
                         <Paper className="bg-light mb-3">
                             <div className="form-horizontal mb-3 pt-2">
                                 <Button
+                                    disabled={this.state.sendButtons}
                                     variant="outlined"
                                     color="primary"
                                     size="medium"
-                                    style={{width: 170, height: 40}}
+                                    style={{width: 150, height: 40}}
                                     onClick={() => {
                                         this.getTableTo()
                                     }}
@@ -373,10 +428,11 @@ class RepeaterPage extends React.Component {
                                     Получить
                                 </Button>
                                 <Button
+                                    disabled={this.state.tableButtonTo}
                                     variant="outlined"
                                     color="default"
                                     size="medium"
-                                    style={{width: 170, height: 40, marginLeft: 5}}
+                                    style={{width: 150, height: 40, marginLeft: 5}}
                                     onClick={() => {
                                         if (this.state.requestTableTo !== undefined) {
                                             this.setState({tableTo: this.state.requestTableTo.ASPR_WSCALL_LOG})
@@ -386,10 +442,11 @@ class RepeaterPage extends React.Component {
                                     wsCallLog
                                 </Button>
                                 <Button
+                                    disabled={this.state.tableButtonTo}
                                     variant="outlined"
                                     color="default"
                                     size="medium"
-                                    style={{width: 170, height: 40, marginLeft: 5}}
+                                    style={{width: 150, height: 40, marginLeft: 5}}
                                     onClick={() => {
                                         if (this.state.requestTableTo !== undefined) {
                                             this.setState({tableTo: this.state.requestTableTo.ASPR_BASE_RESULT})
@@ -398,6 +455,16 @@ class RepeaterPage extends React.Component {
                                 >
                                     baseResult
                                 </Button>
+                                <TextField
+                                    style={{width: 340, marginLeft: 5}}
+                                    size="small"
+                                    id="outlined-basic"
+                                    label="Введите aspr_id"
+                                    value={this.state.newAsprId}
+                                    onChange={(event) => {
+                                        this.setState({newAsprId: event.target.value})
+                                    }}
+                                    variant="outlined"/>
                             </div>
                             <LogTables table={this.state.tableTo}/>
                         </Paper>
