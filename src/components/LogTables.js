@@ -6,7 +6,7 @@ export const LogTables = (props) => {
 
     useEffect(() => {
         setCurTable(props.table)
-    });
+    }, [props.table]);
 
 
     if (curTable === undefined) {

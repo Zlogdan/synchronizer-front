@@ -19,7 +19,7 @@ class TableQuery extends React.Component {
         this.state = {
             tableNames: [],
             selectionModel: [],
-            dictTable: '',
+            dictTable: undefined,
             value: 'TEST_TEST',
             selectedOption: {
                 fromSelected: this.props.serverList[0],
@@ -27,6 +27,10 @@ class TableQuery extends React.Component {
             },
             options: this.props.serverList
         };
+    }
+
+    componentDidMount() {
+        this.getTableNames(this.state.selectedOption.fromSelected)
     }
 
     getTableNames(schema) {
@@ -60,10 +64,7 @@ class TableQuery extends React.Component {
                             alert(response.statusText + " " + response.status)
                         }
                         self.setState({
-                            dictTable: {
-                                responseTable: response.data,
-                                schema: self.state.selectedOption.fromSelected
-                            }
+                            dictTable: response.data
                         })
                     })
                 break;

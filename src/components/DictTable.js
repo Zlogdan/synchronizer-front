@@ -7,9 +7,10 @@ export const DictTable = (props) => {
 
     useEffect(() => {
         setCurTable(props.table)
-    });
+    }, [props.table]);
 
 
+    console.log(curTable)
     if (curTable === undefined) {
         return (
             <div>Пустая таблица</div>
